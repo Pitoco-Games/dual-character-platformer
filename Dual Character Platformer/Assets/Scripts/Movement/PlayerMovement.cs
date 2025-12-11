@@ -1,8 +1,5 @@
-using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Movement
 {
@@ -13,6 +10,9 @@ namespace Movement
         [SerializeField] private float _jumpSpeed;
         [SerializeField] private float _jumpMaxHeight;
         [SerializeField] private float _fallingSpeed;
+        [SerializeField] private float _counterJumpGravity;
+        [SerializeField] private float _fallingGravity;
+        
         [SerializeField] private CircleCollider2D _circleCollider;
 
         private float _moveX;
@@ -55,7 +55,7 @@ namespace Movement
             _jumpCoroutine = StartCoroutine(JumpCoroutine());
         }
 
-        public void StopJumping()
+        public void StopJump()
         {
             if (_jumpCoroutine != null)
             {
@@ -71,13 +71,22 @@ namespace Movement
         {
             float startingHeight = transform.position.y;
             float relativeMaxHeight = startingHeight + _jumpMaxHeight;
+
             while (transform.position.y < relativeMaxHeight)
             {
                 _moveY = JumpSpeedCorrected;
                 yield return null;
             }
+
+            float upwardsVelocity = JumpSpeedCorrected;
+            while (upwardsVelocity > 0)
+            {
+                upwardsVelocity -= _counterJumpGravity * Time.deltaTime;
+                _moveY = upwardsVelocity;
+                yield return null;
+            }
             
-            StopJumping();
+            StopJump();
         }
 
         private IEnumerator FallingCoroutine()
@@ -85,10 +94,11 @@ namespace Movement
             while (!_isGrounded)
             {
                 _moveY = -FallingSpeedCorrected;
+                
                 yield return null;
             }
         }
-
+        
         private void FixedUpdate()
         {
             UpdateIsGrounded();
@@ -105,7 +115,8 @@ namespace Movement
 
         private void UpdateIsGrounded()
         {
-            var raycast = Physics2D.Raycast(transform.position, Vector2.down, GroundedCheckDistance, LayerMask.GetMask("Ground"));
+            const string groundLayerName = "Ground";
+            var raycast = Physics2D.Raycast(transform.position, Vector2.down, GroundedCheckDistance, LayerMask.GetMask(groundLayerName));
             _isGrounded = raycast.collider != null;
             
             if (_isGrounded && _fallingCoroutine != null)

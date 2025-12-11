@@ -35,6 +35,6 @@ public class PlayerControls : MonoBehaviour
     private void StopJumping(InputAction.CallbackContext _)
     {
         _isJumping = false;
-        _movement.StopJumping();
+        _movement.StopJump();
     }
 }
