@@ -9,7 +9,6 @@ public class PlayerControls : MonoBehaviour
     
     private InputAction _movementAction;
     private InputAction _jumpAction;
-    private bool _isJumping;
 
     private void Awake()
     {
@@ -28,13 +27,11 @@ public class PlayerControls : MonoBehaviour
     
     private void StartJumping(InputAction.CallbackContext _)
     {
-        _isJumping = true;
         _movement.StartJump();
     }
     
     private void StopJumping(InputAction.CallbackContext _)
     {
-        _isJumping = false;
         _movement.StopJump();
     }
 }
