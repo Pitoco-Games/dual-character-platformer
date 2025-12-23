@@ -9,11 +9,13 @@ public class PlayerControls : MonoBehaviour
     
     private InputAction _movementAction;
     private InputAction _jumpAction;
+    public InputAction AttackAction { get; private set; }
 
     private void Awake()
     {
         _movementAction = InputSystem.actions.FindAction("Move");
         _jumpAction = InputSystem.actions.FindAction("Jump");
+        AttackAction = InputSystem.actions.FindAction("Attack");
 
         _jumpAction.performed += StartJumping;
         _jumpAction.canceled += StopJumping;
